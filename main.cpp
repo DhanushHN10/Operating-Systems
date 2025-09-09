@@ -46,6 +46,56 @@ class Process{
         return 0;
     }
 
+    int cpu_time_rem = cpu_burst_times[0];
+
+    int cpu_index = 0;
+    int io_index = 0;
+    int io_time_rem = io_times[0];
+
+    void update(){
+        if(state == "running")
+        {
+            if(cpu_time_rem > 0)
+            {
+                cpu_time_rem--;
+            }
+            if(cpu_time_rem == 0)
+            {
+                cpu_index++;
+                if(cpu_index < cpu_burst_times.size())
+                {
+                    state = "waiting";
+                    io_time_rem = io_times[io_index];
+                    io_index++;
+                }
+                else
+                {
+                    state = "terminated";
+                }
+            }
+        }
+
+        else if(state == "waiting")
+        {
+            if(io_time_rem > 0)
+            {
+                io_time_rem--;
+            }
+            if(io_time_rem == 0)
+            {
+                state = "ready";
+                if(cpu_index < cpu_burst_times.size())
+                {
+                    cpu_time_rem = cpu_burst_times[cpu_index];
+                }
+                else
+                {
+                    state = "terminated";
+                }
+            }
+        }
+    }
+
 };
 
 int main(int argc, char* argv[])
