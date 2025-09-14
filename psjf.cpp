@@ -74,6 +74,7 @@ class Process{
     void update(long long time){
         if(state == "running")
         {
+            cout<<"Process "<<pid<<" running, time rem "<<cpu_time_rem<<endl;
             if(cpu_time_rem > 0)
             {
                 cpu_time_rem--;
@@ -88,6 +89,7 @@ class Process{
                     state = "waiting";
                     io_time_rem = io_times[io_index];
                     io_index++;
+                    cout<<"Process "<<pid<<" finished and going to wait state for "<<io_time_rem<<endl;
                 }
                 else
                 {
@@ -122,7 +124,7 @@ class Process{
 
     int get_next_cpu_burst()
     {
-        if(preempt)
+        if(preempt || state == "running")
             return cpu_time_rem;
         if(cpu_index < cpu_burst_times.size())
             return cpu_burst_times[cpu_index];
@@ -234,15 +236,17 @@ void preemptivesjf(long long time)
     if(cpu_busy[0])
     {
         Process* curr = &processes[running_process[0]-1];
+
         if(curr->get_next_cpu_burst() <= p->get_next_cpu_burst())
         {
-            cout<<"["<<time<<"]"<<"CPU is running "<<running_process[0]<<endl;
+            //cout<<"["<<time<<"]"<<"CPU is running "<<running_process[0]<<endl;
             return;
         }
         else
         {
             curr->stop(time-1);
             prq.push(curr);
+            
             cout<<"["<<time<<"]"<<"preempted "<<curr->pid<<endl;
         }
     }
@@ -254,7 +258,7 @@ void preemptivesjf(long long time)
 }
 int main(int argc, char* argv[])
 {
-    if(argc != 3)
+    if(argc != 2)
     {
         cout<<"you dumbeo enter 2\n";
     }
@@ -270,6 +274,7 @@ int main(int argc, char* argv[])
     }
     while(1)
     {
+       cout<<time<<"-----------------------\n";
        while(idx < processes.size() && processes[idx].arrival_time == time)
        {
             prq.push(&processes[idx]);
@@ -292,7 +297,10 @@ int main(int argc, char* argv[])
             break;
         }
         if(time == 30000)
+        {
+            cout<<"Time limit reached\n";
             break;
+        }
         //break;
     }
     long long total_turnaround_time = 0;
@@ -306,12 +314,12 @@ int main(int argc, char* argv[])
     vector<vector<vector<long long>>> gantt_times(MAX_CPUS, vector<vector<long long>>(0, vector<long long>(4, 0)));
     for(int i=0;i<processes.size();i++)
     {
-        cout<<"Process "<<processes[i].pid<<"burst times"<<endl;
+        //cout<<"Process "<<processes[i].pid<<"burst times"<<endl;
         for(int j=0;j<processes[i].burst_times.size();j++)
         {
             int cpu_id = processes[i].burst_times[j][2];
             gantt_times[cpu_id].push_back({processes[i].burst_times[j][0], processes[i].burst_times[j][1], (long long)processes[i].pid, (long long)j+1});
-            cout<<processes[i].burst_times[j][0]<<" "<<processes[i].burst_times[j][1]<<" on cpu "<<processes[i].burst_times[j][2]<<endl;
+            //cout<<processes[i].burst_times[j][0]<<" "<<processes[i].burst_times[j][1]<<" on cpu "<<processes[i].burst_times[j][2]<<endl;
         }
     }
     ofstream gantt_file("gantt_chart.txt");
