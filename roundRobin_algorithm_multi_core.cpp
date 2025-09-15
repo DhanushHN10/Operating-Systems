@@ -1,6 +1,3 @@
-// Yet to implement run times for each process and writing it to the file.
-// Just started with RR implementation.
-
 #include <iostream>
 #include <string>
 #include <vector>
@@ -11,10 +8,13 @@
 #include <queue>
 #include <sstream>
 #include <set>
-#include <bits/stdc++.h> // Change to specifics later
+#include <bits/stdc++.h> 
+#include<chrono>
+using namespace std::chrono;
 
 using namespace std;
 using ll = long long;
+bool debugMode=false;
 
 
 
@@ -63,7 +63,7 @@ public:
         cpu_burst_times.push_back(cpu_time);
         if (cpu_burst_times.size() == 1)
             cpu_time_rem = cpu_burst_times[0];
-        cout << "Added CPU burst time: " << cpu_time << endl;
+       if(debugMode) cout << "Added CPU burst time: " << cpu_time << endl;
         return 0;
     }
     int add_IO_time(int IO_time)
@@ -71,7 +71,7 @@ public:
         io_times.push_back(IO_time);
         if (io_times.size() == 1)
             io_time_rem = io_times[0];
-        cout << "Added I/O burst time: " << IO_time << endl;
+      if(debugMode)  cout << "Added I/O burst time: " << IO_time << endl;
         return 0;
     }
 
@@ -103,12 +103,12 @@ public:
 
         else if (state == "waiting")
         {
-            if (io_time_rem > 0)
+            if (io_time_rem > -1)
             {
                 io_time_rem--;
                 active_time++;
             }
-            if (io_time_rem == 0)
+            if (io_time_rem == -1)
             {
                 state = "ready";
                 if (cpu_index < cpu_burst_times.size())
@@ -142,7 +142,7 @@ void update_waiting_processes(set<Process*>& waiting_processes, queue<Process*>&
         }
         else if (proc->state == "terminated")
         {
-            cout << "Process " << proc->proc_no << " had terminated" <<" at time : "<<timer<< endl;
+        if(debugMode)    cout << "Process " << proc->proc_no << " had terminated" <<" at time : "<<timer<< endl;
             it = waiting_processes.erase(it);
         }
         else
@@ -155,7 +155,7 @@ void update_waiting_processes(set<Process*>& waiting_processes, queue<Process*>&
 void roundRobin(queue<Process*>& process_queue, Process*& curr_process,set<Process*>& waiting_processes, ll& timer, int& time_quanta, vector<vector<int>>& gantt_chart, int cpu_no)
 {
     if(curr_process) curr_process->update();
-    update_waiting_processes(waiting_processes,process_queue,timer);
+    // update_waiting_processes(waiting_processes,process_queue,timer);
 
     if(!curr_process && process_queue.empty()) 
     return;
@@ -166,7 +166,7 @@ void roundRobin(queue<Process*>& process_queue, Process*& curr_process,set<Proce
         process_queue.pop();
         curr_process->state= "running";
         curr_process->run_time_counter=0;
-        cout<<"Process "<<curr_process->proc_no<<" is now running at time : "<<timer<<endl;
+     if(debugMode)   cout<<"Process "<<curr_process->proc_no<<" is now running at time : "<<timer<<endl;
         curr_process->temp_start_time=timer;
         curr_process->no_time_on_cpu++;
         curr_process->update();
@@ -175,7 +175,7 @@ void roundRobin(queue<Process*>& process_queue, Process*& curr_process,set<Proce
 
     if(curr_process && curr_process->run_time_counter == time_quanta && curr_process->state=="running")
     {
-        cout<<"Time quanta expired for process: "<<curr_process->proc_no<<
+      if(debugMode)  cout<<"Time quanta expired for process: "<<curr_process->proc_no<<
         " at time: "<<timer<<endl;
         curr_process->state="ready";
         curr_process->temp_end_time=timer;
@@ -190,7 +190,7 @@ void roundRobin(queue<Process*>& process_queue, Process*& curr_process,set<Proce
 
     if(curr_process && curr_process->state=="waiting")
     {
-        cout<<"Process "<<curr_process->proc_no<<" is now blocked and waiting due to I/O; at time : "<<timer<<endl;
+      if(debugMode)  cout<<"Process "<<curr_process->proc_no<<" is now blocked and waiting due to I/O; at time : "<<timer<<endl;
         waiting_processes.insert(curr_process);
         curr_process->temp_end_time=timer;
         auto stat= {cpu_no, curr_process->proc_no,curr_process->no_time_on_cpu, curr_process->temp_start_time,curr_process->temp_end_time };
@@ -201,7 +201,7 @@ void roundRobin(queue<Process*>& process_queue, Process*& curr_process,set<Proce
 
     if(curr_process && curr_process->state=="terminated")
     {
-        cout<<"Process "<<curr_process->proc_no<<" has terminated at time : "<<timer<< endl;
+      if(debugMode)  cout<<"Process "<<curr_process->proc_no<<" has terminated at time : "<<timer<< endl;
         curr_process->turn_around_time= timer - curr_process->arrival_time + 1 ;
         curr_process->temp_end_time=timer;
         auto stat= {cpu_no, curr_process->proc_no,curr_process->no_time_on_cpu, curr_process->temp_start_time,curr_process->temp_end_time };
@@ -276,7 +276,7 @@ int main(int argc, char* argv[])
             
                 ss >> x;
                 // cout<<ss.str()<<endl;
-                cout<<line<<endl;
+                // cout<<line<<endl;
             }
 
             all_processes.push_back(new_process);
@@ -288,17 +288,10 @@ int main(int argc, char* argv[])
 
     }
 
-    // for(auto& proc : all_processes)
-    // {
-    //     cout<<"Process "<<proc->proc_no<<endl;
-    // }
-
-    //  Pre Loaded all the process's data
-
-    // Impelementing the RR scheduling algo
+  
     int process_idx=0;
    
-
+    auto start = high_resolution_clock::now();
     ll timer = 0;
     vector<vector<int>> gantt_chart;
     while(!process_queue.empty() || !waiting_processes.empty() || !all_idle(curr_processes) ||  process_idx < all_processes.size())
@@ -318,19 +311,14 @@ int main(int argc, char* argv[])
         roundRobin(process_queue,curr_processes[i],waiting_processes,timer,time_quanta,gantt_chart, i);
 
         }
-    //         cout<<"Is queue empty: "<<process_queue.empty()<<endl;
-    // cout<<"Is waiting empty: "<<waiting_processes.empty()<<endl;
-    // if(!process_queue.empty())cout<<process_queue.front()->proc_no<<endl;
-    // if(curr_process)cout<<curr_process->proc_no<<endl;
-    // cout<<"Is current process null: "<<(curr_process==nullptr)<<endl;
-
-
-
-
-
+        update_waiting_processes(waiting_processes,process_queue,timer);
 
         timer++;
     }
+
+    auto stop = high_resolution_clock::now();
+      auto duration = duration_cast<microseconds>(stop - start);
+  
 
     for(auto& proc : all_processes)
     {
@@ -343,7 +331,8 @@ int main(int argc, char* argv[])
     average_turnaround_time/= size;
 
     cout<<"Time quanta used: "<<time_quanta<<endl;
-    cout<<"\nAverage Turnaround time: "<<average_turnaround_time<<endl;
+    cout<<"Average Turnaround time: "<<average_turnaround_time<<endl;
+      cout << "Total time taken: " << duration.count() << " microseconds" << endl;
     
     
     // cout<<"Is queue empty: "<<process_queue.empty()<<endl;
@@ -351,7 +340,10 @@ int main(int argc, char* argv[])
     // if(!process_queue.empty())cout<<process_queue.front()->proc_no<<endl;
     // if(curr_process)cout<<curr_process->proc_no<<endl;
     // cout<<"Is current process null: "<<(curr_process==nullptr)<<endl;
+    
 
+
+    
 
     sort(gantt_chart.begin(), gantt_chart.end(), [](const vector<int>& a, const vector<int>& b){
     if(a[0] != b[0]) return a[0] < b[0];  
