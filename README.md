@@ -8,14 +8,13 @@ Lab Assignment - 3
 Run:  
 make clean  
 make buildall  
-./all.out '<data_file>' '<algorithm>' '<time_quanta>'
+./all.out `<data_file>` `<algorithm>` `<time_quanta>`  
 
 # Steps to run on dual core system  
 Run:  
 make clean  
 make buildall  
-./all_multi.out <data_file> <algorithm> <time_quanta>  
-
+./all_multi.out `<data_file>` `<algorithm>` `<time_quanta>`
 
 # Algorithms:  
 "fifo":first in first out  
