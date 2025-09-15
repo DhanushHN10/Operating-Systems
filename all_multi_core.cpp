@@ -32,7 +32,7 @@ int main(int argc, char* argv[])
 			else
 			{
 				wait(NULL);
-				cout<<"Simulation done, check output on gantt_chart.txt\n";
+				cout<<"Simulation done, check output on gantt_chart_npsjf_multi_core.txt\n";
 
 			}
 		}
@@ -47,7 +47,7 @@ int main(int argc, char* argv[])
 			else
 			{
 				wait(NULL);
-				cout<<"Simulation done, check output on gantt_chart.txt\n";
+				cout<<"Simulation done, check output on gantt_chart_psjf_multi_core.txt\n";
 
 			}
 		}
@@ -62,7 +62,7 @@ int main(int argc, char* argv[])
 			else
 			{
 				wait(NULL);
-				cout<<"Simulation done\n";
+				cout<<"Simulation done, check output on gantt_chart_fifo_multi_core.txt\n";
 			}
 		}
 		else if(strcmp(argv[2], "rr") == 0){
@@ -76,7 +76,7 @@ int main(int argc, char* argv[])
 			else
 			{
 				wait(NULL);
-				cout<<"Simulation done\n";
+				cout<<"Simulation done, check output on gantt_chart_RR_multi_core.txt\n";
 			}
 		}
 		else{

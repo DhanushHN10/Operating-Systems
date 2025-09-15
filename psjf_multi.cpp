@@ -361,7 +361,7 @@ int main(int argc, char *argv[])
             //cout << processes[i].burst_times[j][0] << " " << processes[i].burst_times[j][1] << " on cpu " << processes[i].burst_times[j][2] << endl;
         }
     }
-    ofstream gantt_file("gantt_chart.txt");
+    ofstream gantt_file("gantt_chart_psjf_multi_core.txt");
     for (int i = 0; i < MAX_CPUS; i++)
     {
         sort(gantt_times[i].begin(), gantt_times[i].end());
