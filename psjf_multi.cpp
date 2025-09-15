@@ -8,9 +8,11 @@
 #include <queue>
 #include <sstream>
 #include <algorithm>
+#include <chrono>
 using namespace std;
 
 #define MAX_CPUS 2
+bool  debug = false;
 bool cpu_busy[MAX_CPUS];
 int running_process[MAX_CPUS];
 void finished(int pid, int cpu_id);
@@ -57,14 +59,14 @@ public:
     int add_cpu_time(int cpu_time)
     {
         cpu_burst_times.push_back(cpu_time);
-        cout << "Added cput" << cpu_time << endl;
+        if(debug) cout << "Added cput" << cpu_time << endl;
         cpu_time_rem = cpu_burst_times[0];
         return 0;
     }
     int add_IO_time(int IO_time)
     {
         io_times.push_back(IO_time);
-        cout << "Added iot" << IO_time << endl;
+        if(debug) cout << "Added iot" << IO_time << endl;
         io_time_rem = io_times[0];
         return 0;
     }
@@ -73,7 +75,7 @@ public:
     {
         if (state == "running")
         {
-            cout << "Process " << pid << " running, time rem " << cpu_time_rem << endl;
+            if(debug) cout << "Process " << pid << " running, time rem " << cpu_time_rem << endl;
             if (cpu_time_rem > 0)
             {
                 cpu_time_rem--;
@@ -88,12 +90,12 @@ public:
                     state = "waiting";
                     io_time_rem = io_times[io_index];
                     io_index++;
-                    cout << "Process " << pid << " finished and going to wait state for " << io_time_rem << endl;
+                    if(debug) cout << "Process " << pid << " finished and going to wait state for " << io_time_rem << endl;
                 }
                 else
                 {
                     state = "terminated";
-                    turn_around_time = time - arrival_time;
+                    turn_around_time = time - arrival_time + 1;
                     terminate(pid);
                 }
             }
@@ -169,7 +171,7 @@ void finished(int pid, int cpu_id)
 
 void got_ready(int pid)
 {
-    cout << "Process " << pid << " got ready\n";
+    if(debug) cout << "Process " << pid << " got ready\n";
     prq.push(&processes[pid - 1]);
 }
 
@@ -225,7 +227,7 @@ void preemptivesjf(long long time, int cpu_id)
 {
     // if(cpu_busy[0])
     // {
-    //     cout<<"["<<time<<"]"<<"CPU is running "<<running_process[0]<<endl;
+    //     if(debug) cout<<"["<<time<<"]"<<"CPU is running "<<running_process[0]<<endl;
     //     return;
     // }
 
@@ -240,7 +242,7 @@ void preemptivesjf(long long time, int cpu_id)
             long long most_busy_time = processes[running_process[cpu_id]-1].get_next_cpu_burst();
             for (int i = 0; i < MAX_CPUS; i++)
             {
-                cout<<"CPU"<<i<<((cpu_busy[i])? " busy":" free")<<endl;
+                if(debug) cout<<"CPU"<<i<<((cpu_busy[i])? " busy":" free")<<endl;
                 if(i == cpu_id)
                     continue;
                 if(!cpu_busy[i])
@@ -268,11 +270,11 @@ void preemptivesjf(long long time, int cpu_id)
     if (cpu_busy[cpu_id])
     {
         Process *curr = &processes[running_process[cpu_id] - 1];
-        // cout<<"curr pid "<<curr->pid<<" curr rem "<<curr->get_next_cpu_burst()<<endl;
-        // cout<<"p pid "<<p->pid<<" p rem "<<p->get_next_cpu_burst()<<endl;
+        // if(debug) cout<<"curr pid "<<curr->pid<<" curr rem "<<curr->get_next_cpu_burst()<<endl;
+        // if(debug) cout<<"p pid "<<p->pid<<" p rem "<<p->get_next_cpu_burst()<<endl;
         if (curr->get_next_cpu_burst() <= p->get_next_cpu_burst())
         {
-            // cout<<"["<<time<<"]"<<"CPU is running "<<running_process[0]<<endl;
+            // if(debug) cout<<"["<<time<<"]"<<"CPU is running "<<running_process[0]<<endl;
             return;
         }
         else
@@ -280,18 +282,18 @@ void preemptivesjf(long long time, int cpu_id)
             curr->stop(time - 1);
             prq.push(curr);
 
-            cout << "[" << time << "]" << "preempted " << curr->pid << endl;
+            if(debug) cout << "[" << time << "]" << "preempted " << curr->pid << endl;
         }
     }
     prq.pop();
     p->run(time, cpu_id);
     cpu_busy[cpu_id] = true;
     running_process[cpu_id] = p->pid;
-    cout << "[" << time << "]" << "scheduled " << p->pid << " on " << cpu_id << endl;
+    if(debug) cout << "[" << time << "]" << "scheduled " << p->pid << " on " << cpu_id << endl;
 }
 int main(int argc, char *argv[])
 {
-    if (argc != 3)
+    if (argc != 2)
     {
         cout << "you dumbeo enter 2\n";
     }
@@ -305,13 +307,14 @@ int main(int argc, char *argv[])
         cpu_busy[i] = false;
         running_process[i] = -1;
     }
+    auto start = chrono::high_resolution_clock::now();
     while (1)
     {
-        cout << time << "-----------------------\n";
+        if(debug) cout << time << "-----------------------\n";
         while (idx < processes.size() && processes[idx].arrival_time == time)
         {
             prq.push(&processes[idx]);
-            cout << "[" << time << "]" << "process " << processes[idx].pid << " arrived" << endl;
+            if(debug) cout << "[" << time << "]" << "process " << processes[idx].pid << " arrived" << endl;
             idx++;
             if (idx == processes.size())
                 inpf = 1;
@@ -326,16 +329,19 @@ int main(int argc, char *argv[])
         time++;
         if (terminated_processes == processes.size() && inpf)
         {
-            cout << "All processes terminated at time " << time << endl;
+            if(debug) cout << "All processes terminated at time " << time << endl;
             break;
         }
         if (time == 30000)
         {
-            cout << "Time limit reached\n";
+            if(debug) cout << "Time limit reached\n";
             break;
         }
         // break;
     }
+    auto end = chrono::high_resolution_clock::now();
+    auto duration = chrono::duration_cast<chrono::microseconds>(end - start);
+    cout << "Time taken: " << duration.count() << " microseconds" << endl;
     long long total_turnaround_time = 0;
     for (int i = 0; i < processes.size(); i++)
     {
@@ -362,7 +368,7 @@ int main(int argc, char *argv[])
         gantt_file << "CPU" << i << endl;
         for (int j = 0; j < gantt_times[i].size(); j++)
         {
-            gantt_file << "P" << gantt_times[i][j][2] << "," << gantt_times[i][j][3] << "\t\t" << gantt_times[i][j][0] << "," << gantt_times[i][j][1] << endl;
+            gantt_file << "P" << gantt_times[i][j][2] << "," << gantt_times[i][j][3] << "\t\t" << gantt_times[i][j][0] << "\t\t" << gantt_times[i][j][1] << endl;
         }
     }
 

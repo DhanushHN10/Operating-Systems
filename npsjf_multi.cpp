@@ -8,9 +8,12 @@
 #include <queue>
 #include <sstream>
 #include <algorithm>
+#include <chrono>
 using namespace std;
 
 #define MAX_CPUS 2
+
+bool debug = false;
 bool cpu_busy[MAX_CPUS];
 int running_process[MAX_CPUS];
 void finished(int pid, int cpu_id);
@@ -58,14 +61,14 @@ public:
     int add_cpu_time(int cpu_time)
     {
         cpu_burst_times.push_back(cpu_time);
-        cout << "Added cput" << cpu_time << endl;
+        if(debug) cout << "Added cput" << cpu_time << endl;
         cpu_time_rem = cpu_burst_times[0];
         return 0;
     }
     int add_IO_time(int IO_time)
     {
         io_times.push_back(IO_time);
-        cout << "Added iot" << IO_time << endl;
+        if(debug) cout << "Added iot" << IO_time << endl;
         io_time_rem = io_times[0];
         return 0;
     }
@@ -92,7 +95,7 @@ public:
                 else
                 {
                     state = "terminated";
-                    turn_around_time = time - arrival_time;
+                    turn_around_time = time - arrival_time + 1;
                     terminate(pid);
                 }
             }
@@ -221,7 +224,7 @@ void nonpreemptivesjf(long long time, int cpu_id)
 {
     if (cpu_busy[cpu_id])
     {
-        cout << "[" << time << "]" << "CPU" << cpu_id << " is running " << running_process[cpu_id] << endl;
+        if(debug) cout << "[" << time << "]" << "CPU" << cpu_id << " is running " << running_process[cpu_id] << endl;
         return;
     }
     if (prq.empty())
@@ -231,11 +234,11 @@ void nonpreemptivesjf(long long time, int cpu_id)
     p->run(time, cpu_id);
     cpu_busy[cpu_id] = true;
     running_process[cpu_id] = p->pid;
-    cout << "[" << time << "]" << "scheduled " << p->pid << "on " << cpu_id << endl;
+    if(debug) cout << "[" << time << "]" << "scheduled " << p->pid << "on " << cpu_id << endl;
 }
 int main(int argc, char *argv[])
 {
-    if (argc != 3)
+    if (argc != 2)
     {
         cout << "you dumbeo enter 2\n";
     }
@@ -249,12 +252,13 @@ int main(int argc, char *argv[])
         cpu_busy[i] = false;
         running_process[i] = -1;
     }
+    auto start = chrono::high_resolution_clock::now();
     while (1)
     {
         while (idx < processes.size() && processes[idx].arrival_time == time)
         {
             prq.push(&processes[idx]);
-            cout << "[" << time << "]" << "process " << processes[idx].pid << " arrived" << endl;
+            if(debug) cout << "[" << time << "]" << "process " << processes[idx].pid << " arrived" << endl;
             idx++;
             if (idx == processes.size())
                 inpf = 1;
@@ -276,6 +280,9 @@ int main(int argc, char *argv[])
             break;
         // break;
     }
+    auto end = chrono::high_resolution_clock::now();
+    auto duration = chrono::duration_cast<chrono::microseconds>(end - start);
+    cout << "Time taken by function: " << duration.count() << " microseconds" << endl;
     long long total_turnaround_time = 0;
     for (int i = 0; i < processes.size(); i++)
     {
@@ -302,7 +309,7 @@ int main(int argc, char *argv[])
         gantt_file << "CPU" << i << endl;
         for (int j = 0; j < gantt_times[i].size(); j++)
         {
-            gantt_file << "P" << gantt_times[i][j][2] << "," << gantt_times[i][j][3] << "\t\t" << gantt_times[i][j][0] << "," << gantt_times[i][j][1] << endl;
+            gantt_file << "P" << gantt_times[i][j][2] << "," << gantt_times[i][j][3] << "\t\t" << gantt_times[i][j][0] << "\t\t" << gantt_times[i][j][1] << endl;
         }
     }
 
