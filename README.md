@@ -8,7 +8,7 @@ Lab Assignment - 3
 Run:  
 make clean  
 make buildall  
-./all.out <data_file> <algorithm> <time_quanta>  
+./all.out '<data_file>' '<algorithm>' '<time_quanta>'
 
 # Steps to run on dual core system  
 Run:  
