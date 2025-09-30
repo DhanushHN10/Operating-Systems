@@ -32,7 +32,7 @@ int main(int argc, char* argv[])
 			else
 			{
 				wait(NULL);
-				cout<<"Simulation done, check output on gantt_chart.txt\n";
+				cout<<"Simulation done, check output on gantt_chart_npsjf.txt\n";
 
 			}
 		}
@@ -47,7 +47,7 @@ int main(int argc, char* argv[])
 			else
 			{
 				wait(NULL);
-				cout<<"Simulation done, check output on gantt_chart.txt\n";
+				cout<<"Simulation done, check output on gantt_chart_psjf.txt\n";
 
 			}
 		}
@@ -62,7 +62,8 @@ int main(int argc, char* argv[])
 			else
 			{
 				wait(NULL);
-				cout<<"Simulation done\n";
+				cout<<"Simulation done, check output on gantt_chart_fifo.txt\n";
+
 			}
 		}
 		else if(strcmp(argv[2], "rr") == 0){
@@ -72,7 +73,7 @@ int main(int argc, char* argv[])
 			if(pid2 == 0)
 			{
 				execvp(command2[0], command2);
-				cout<<"Simulation done\n";
+				cout<<"Simulation done, check output on gantt_chart_RR.txt\n";
 			}
 			else
 			{
