@@ -41,6 +41,7 @@ public:
     int temp_start_time;
     int no_time_on_cpu;
     int temp_end_time;
+    int preempted_time;
 
     Process(int arr_time)
     {
@@ -160,12 +161,13 @@ void roundRobin(queue<Process*>& process_queue, Process*& curr_process,set<Proce
     if(!curr_process && process_queue.empty()) 
     return;
 
-    if(curr_process == nullptr && !process_queue.empty())
+    if(curr_process == nullptr && !process_queue.empty() && process_queue.front()->preempted_time!=timer)
     {
         curr_process = process_queue.front();
         process_queue.pop();
         curr_process->state= "running";
         curr_process->run_time_counter=0;
+        
      if(debugMode)   cout<<"Process "<<curr_process->proc_no<<" is now running at time : "<<timer<<endl;
         curr_process->temp_start_time=timer;
         curr_process->no_time_on_cpu++;
@@ -175,6 +177,7 @@ void roundRobin(queue<Process*>& process_queue, Process*& curr_process,set<Proce
 
     if(curr_process && curr_process->run_time_counter == time_quanta && curr_process->state=="running")
     {
+       
       if(debugMode)  cout<<"Time quanta expired for process: "<<curr_process->proc_no<<
         " at time: "<<timer<<endl;
         curr_process->state="ready";
@@ -183,6 +186,7 @@ void roundRobin(queue<Process*>& process_queue, Process*& curr_process,set<Proce
         gantt_chart.push_back(stat);
         process_queue.push(curr_process);
         curr_process->run_time_counter=0;
+        curr_process->preempted_time=timer;
         curr_process= nullptr;
         
 
