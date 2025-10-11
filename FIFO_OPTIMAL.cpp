@@ -301,7 +301,7 @@ int main(int argc, char *argv[])
         while (getline(file, l))
         {
             int pid = stoi(l.substr(0, 1));
-            uint64_t address = stol(l.substr(2));
+            uint64_t address = stoull(l.substr(2));
             uint64_t page_number = address / PAGE_SIZE;
 
             if (future.find({pid, page_number}) == future.end())
