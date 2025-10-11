@@ -2,8 +2,7 @@ import subprocess
 
 # === Configuration ===
 executable = "./FIFO_OPTIMAL.out"
-page_sizes = [64, 512, 1024, 4096, 16*1024, 64*1024] 
-num_frames_list = [4, 64, 128, 1024, 4096, 16*1024, 64*1024]
+
 l = [[64,4], [64, 128], [128, 1024], [1024,128], [4096,1024], [16384,4096], [65536,16384], [65536, 65536]] # pairs of page size and number of frames
 replacement_policies = ["FIFO"]  # optional — can limit to ["FIFO"]
 allocation_policies = ["LOCAL", "GLOBAL"]   # optional — can limit to one
