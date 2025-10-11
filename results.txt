@@ -1,0 +1,128 @@
+=== PAGE_SIZE=64, FRAMES=4, REPLACEMENT=FIFO, ALLOCATION=LOCAL ===
+Process 0 had 67591 page faults.
+Process 1 had 81860 page faults.
+Process 2 had 72967 page faults.
+Process 3 had 58547 page faults.
+Total Page Faults: 280965
+
+
+=== PAGE_SIZE=64, FRAMES=128, REPLACEMENT=FIFO, ALLOCATION=LOCAL ===
+Process 0 had 13420 page faults.
+Process 1 had 18046 page faults.
+Process 2 had 23542 page faults.
+Process 3 had 9930 page faults.
+Total Page Faults: 64938
+
+
+=== PAGE_SIZE=128, FRAMES=1024, REPLACEMENT=FIFO, ALLOCATION=LOCAL ===
+Process 0 had 446 page faults.
+Process 1 had 8143 page faults.
+Process 2 had 13368 page faults.
+Process 3 had 603 page faults.
+Total Page Faults: 22560
+
+
+=== PAGE_SIZE=1024, FRAMES=128, REPLACEMENT=FIFO, ALLOCATION=LOCAL ===
+Process 0 had 658 page faults.
+Process 1 had 1195 page faults.
+Process 2 had 10590 page faults.
+Process 3 had 2810 page faults.
+Total Page Faults: 15253
+
+
+=== PAGE_SIZE=4096, FRAMES=1024, REPLACEMENT=FIFO, ALLOCATION=LOCAL ===
+Process 0 had 51 page faults.
+Process 1 had 138 page faults.
+Process 2 had 5384 page faults.
+Process 3 had 54 page faults.
+Total Page Faults: 5627
+
+
+=== PAGE_SIZE=16384, FRAMES=4096, REPLACEMENT=FIFO, ALLOCATION=LOCAL ===
+Process 0 had 35 page faults.
+Process 1 had 38 page faults.
+Process 2 had 267 page faults.
+Process 3 had 27 page faults.
+Total Page Faults: 367
+
+
+=== PAGE_SIZE=65536, FRAMES=16384, REPLACEMENT=FIFO, ALLOCATION=LOCAL ===
+Process 0 had 21 page faults.
+Process 1 had 14 page faults.
+Process 2 had 100 page faults.
+Process 3 had 16 page faults.
+Total Page Faults: 151
+
+
+=== PAGE_SIZE=65536, FRAMES=65536, REPLACEMENT=FIFO, ALLOCATION=LOCAL ===
+Process 0 had 21 page faults.
+Process 1 had 14 page faults.
+Process 2 had 100 page faults.
+Process 3 had 16 page faults.
+Total Page Faults: 151
+
+
+=== PAGE_SIZE=64, FRAMES=4, REPLACEMENT=FIFO, ALLOCATION=GLOBAL ===
+Process 0 had 73412 page faults.
+Process 1 had 78578 page faults.
+Process 2 had 77159 page faults.
+Process 3 had 68602 page faults.
+Total Page Faults: 297751
+
+
+=== PAGE_SIZE=64, FRAMES=128, REPLACEMENT=FIFO, ALLOCATION=GLOBAL ===
+Process 0 had 15093 page faults.
+Process 1 had 17968 page faults.
+Process 2 had 24043 page faults.
+Process 3 had 11481 page faults.
+Total Page Faults: 68585
+
+
+=== PAGE_SIZE=128, FRAMES=1024, REPLACEMENT=FIFO, ALLOCATION=GLOBAL ===
+Process 0 had 1357 page faults.
+Process 1 had 8112 page faults.
+Process 2 had 13063 page faults.
+Process 3 had 1928 page faults.
+Total Page Faults: 24460
+
+
+=== PAGE_SIZE=1024, FRAMES=128, REPLACEMENT=FIFO, ALLOCATION=GLOBAL ===
+Process 0 had 2834 page faults.
+Process 1 had 2233 page faults.
+Process 2 had 9955 page faults.
+Process 3 had 2555 page faults.
+Total Page Faults: 17577
+
+
+=== PAGE_SIZE=4096, FRAMES=1024, REPLACEMENT=FIFO, ALLOCATION=GLOBAL ===
+Process 0 had 78 page faults.
+Process 1 had 140 page faults.
+Process 2 had 1498 page faults.
+Process 3 had 92 page faults.
+Total Page Faults: 1808
+
+
+=== PAGE_SIZE=16384, FRAMES=4096, REPLACEMENT=FIFO, ALLOCATION=GLOBAL ===
+Process 0 had 35 page faults.
+Process 1 had 38 page faults.
+Process 2 had 267 page faults.
+Process 3 had 27 page faults.
+Total Page Faults: 367
+
+
+=== PAGE_SIZE=65536, FRAMES=16384, REPLACEMENT=FIFO, ALLOCATION=GLOBAL ===
+Process 0 had 21 page faults.
+Process 1 had 14 page faults.
+Process 2 had 100 page faults.
+Process 3 had 16 page faults.
+Total Page Faults: 151
+
+
+=== PAGE_SIZE=65536, FRAMES=65536, REPLACEMENT=FIFO, ALLOCATION=GLOBAL ===
+Process 0 had 21 page faults.
+Process 1 had 14 page faults.
+Process 2 had 100 page faults.
+Process 3 had 16 page faults.
+Total Page Faults: 151
+
+
