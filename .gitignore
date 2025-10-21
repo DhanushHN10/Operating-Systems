@@ -1,0 +1,3 @@
+*.ppm
+!image.ppm
+*.out
