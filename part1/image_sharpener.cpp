@@ -5,6 +5,7 @@
 using namespace std::chrono;
 using namespace std;
 int bb = 2;
+float alpha=1.1;
 
 struct image_t* S1_smoothen(struct image_t *input_image)
 {
@@ -114,7 +115,7 @@ struct image_t* S3_sharpen(struct image_t *input_image, struct image_t *details_
 	 {
 	  for(int k=0;k<3;k++)
 	  {
-	   int lol = input_image->image_pixels[i][j][k] + details_image->image_pixels[i][j][k];
+	   int lol = input_image->image_pixels[i][j][k] + static_cast<int>(alpha * details_image->image_pixels[i][j][k]);
 	   if(lol > 255)
 		sh->image_pixels[i][j][k] = 255;
 	   else
