@@ -14,7 +14,7 @@ struct image_t *input_image;
 struct image_t *sharpened_image;
 int bb = 2;
 float alpha = 1;
-bool debug = false;
+bool debug = true;
 struct pixel
 {
     uint8_t r;
@@ -82,10 +82,10 @@ void S1_smoothen(struct image_t *input_image, int read_fd, int write_fd)
             row[j].x = j;
             row[j].y = i;
             // write(write_fd, &p, sizeof(pixel));
-            if (debug)
-                cout << "S1 on Processed Pixel (" << p.x << "," << p.y << ")\n";
         }
         write(write_fd, row, si->width * sizeof(pixel));
+        if (debug)
+            cout << "S1 on Processed row (" << i << ")\n";
     }
     // printf("%d", si->width);
 }
@@ -134,26 +134,46 @@ void S2_find_details(struct image_t *input_image, int read_fd, int write_fd)
 
         write(write_fd, &out_row, sizeof(pixel) * input_image->width);
         if (debug)
-            cout << "S2 on Processed Pixel (" << out_p.x << "," << out_p.y << ")\n";
+            cout << "S2 on Processed row (" << rows_read << ")\n";
     }
 }
 
 void S3_sharpen(struct image_t *input_image, int read_fd)
 {
     // TODO
-    int pixels_read = 0;
+    int rows_read = 0;
+    pixel *row = new pixel[input_image->width];
     while (1)
     {
         pixel p;
-        ssize_t bytes_read = read(read_fd, &p, sizeof(pixel));
+        ssize_t bytes_read = read(read_fd, &row, sizeof(pixel) * input_image->width);
         if (bytes_read == 0)
             continue;
-        pixels_read++;
-        if (pixels_read > input_image->width * input_image->height)
+        rows_read++;
+        if (rows_read > input_image->width * input_image->height)
             break;
         if (debug)
-            cout << "S3 on Received Pixel (" << p.x << "," << p.y << ")" << "Pixels Read: " << pixels_read << endl;
+            cout << "S3 on Received Pixel (" << p.x << "," << p.y << ")" << "Pixels Read: " << rows_read << endl;
 
+        for (int i = 0; i < input_image->width; i++)
+        {
+            pixel p = row[i];
+            int r = input_image->image_pixels[p.y][p.x][0] + static_cast<int>(alpha * p.r);
+            int g = input_image->image_pixels[p.y][p.x][1] + static_cast<int>(alpha * p.g);
+            int b = input_image->image_pixels[p.y][p.x][2] + static_cast<int>(alpha * p.b);
+            if (r > 255)
+                sharpened_image->image_pixels[p.y][p.x][0] = 255;
+            else
+                sharpened_image->image_pixels[p.y][p.x][0] = r;
+            if (g > 255)
+                sharpened_image->image_pixels[p.y][p.x][1] = 255;
+            else
+                sharpened_image->image_pixels[p.y][p.x][1] = g;
+            if (b > 255)
+                sharpened_image->image_pixels[p.y][p.x][2] = 255;
+            else
+                sharpened_image->image_pixels[p.y][p.x][2] = b;
+        }
         int r = input_image->image_pixels[p.y][p.x][0] + static_cast<int>(alpha * p.r);
         int g = input_image->image_pixels[p.y][p.x][1] + static_cast<int>(alpha * p.g);
         int b = input_image->image_pixels[p.y][p.x][2] + static_cast<int>(alpha * p.b);
@@ -169,12 +189,13 @@ void S3_sharpen(struct image_t *input_image, int read_fd)
             sharpened_image->image_pixels[p.y][p.x][2] = 255;
         else
             sharpened_image->image_pixels[p.y][p.x][2] = b;
-        if (pixels_read >= input_image->width * input_image->height)
+        if (rows_read >= input_image->height)
             break;
     }
 }
 int main(int argc, char **argv)
 {
+    int noi = 1;
 
     if (argc != 3)
     {
@@ -206,7 +227,7 @@ int main(int argc, char **argv)
     if (S1_pid == 0)
     {
         close(S1_S2_pipe[0]);
-        for (int i = 0; i < 1000; i++)
+        for (int i = 0; i < noi; i++)
         {
             S1_smoothen(input_image, -1, S1_S2_pipe[1]);
             cout << "Process S1 completed iteration " << i + 1 << "\n";
@@ -221,7 +242,7 @@ int main(int argc, char **argv)
         {
             close(S1_S2_pipe[1]);
             close(S2_S3_pipe[0]);
-            for (int i = 0; i < 1000; i++)
+            for (int i = 0; i < noi; i++)
             {
                 S2_find_details(input_image, S1_S2_pipe[0], S2_S3_pipe[1]);
                 cout << "Process S2 completed iteration " << i + 1 << "\n";
@@ -231,7 +252,7 @@ int main(int argc, char **argv)
         {
             close(S1_S2_pipe[0]);
             close(S2_S3_pipe[1]);
-            for (int i = 0; i < 1000; i++)
+            for (int i = 0; i < noi; i++)
             {
                 S3_sharpen(input_image, S2_S3_pipe[0]);
                 cout << "Process S3 completed iteration " << i + 1 << "\n";
