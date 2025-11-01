@@ -6,3 +6,5 @@
 .gitignore
 makefile
 README.md
+.vscode/settings.json
+.gitignore
