@@ -124,7 +124,17 @@ struct image_t *S3_sharpen(struct image_t *input_image, struct image_t *details_
 	}
 	return sh;
 }
-
+void free_image(image_t *img)
+{
+	for (int i = 0; i < img->height; ++i)
+	{
+		for (int j = 0; j < img->width; ++j)
+			delete[] img->image_pixels[i][j];
+		delete[] img->image_pixels[i];
+	}
+	delete[] img->image_pixels;
+	delete img;
+}
 int main(int argc, char **argv)
 {
 	if (argc != 3)
@@ -163,6 +173,22 @@ int main(int argc, char **argv)
 	auto stop = high_resolution_clock::now();
 	auto duration = duration_cast<microseconds>(stop - start);
 	cout << "Total time taken: " << duration.count() << " microseconds" << endl;
+
+	start = high_resolution_clock::now();
+
+	for (int i = 0; i < 1000; i++)
+	{
+		struct image_t *temp_smoothened_image = S1_smoothen(input_image);
+		struct image_t *temp_details_image = S2_find_details(input_image, temp_smoothened_image);
+		struct image_t *temp_sharpened_image = S3_sharpen(input_image, temp_details_image);
+		cout << "Done iteration " << i + 1 << endl;
+		free_image(temp_smoothened_image);
+		free_image(temp_details_image);
+		free_image(temp_sharpened_image);
+	}
+	stop = high_resolution_clock::now();
+	duration = duration_cast<milliseconds>(stop - start);
+	cout << "Time taken for 1000 iterations: " << duration.count() << " ms" << endl;
 
 	return 0;
 }
