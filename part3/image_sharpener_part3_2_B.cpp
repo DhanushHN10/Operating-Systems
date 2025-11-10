@@ -35,6 +35,33 @@ struct __attribute__((packed)) pixel
     uint8_t b;
     int x, y;
 };
+ssize_t send_all(int sock, const void *buf, size_t len)
+{
+    size_t total = 0;
+    const char *p = (const char *)buf;
+    while (total < len)
+    {
+        ssize_t sent = send(sock, p + total, len - total, 0);
+        if (sent <= 0)
+            return sent;
+        total += sent;
+    }
+    return total;
+}
+
+ssize_t recv_all(int sock, void *buf, size_t len)
+{
+    size_t total = 0;
+    char *p = (char *)buf;
+    while (total < len)
+    {
+        ssize_t recvd = recv(sock, p + total, len - total, 0);
+        if (recvd <= 0)
+            return recvd;
+        total += recvd;
+    }
+    return total;
+}
 
 void S2_find_details(struct image_t *input_image, void *S2_S3_ptr, sem_t *S2_S3_sem, sem_t *S3_S2_sem, int sockfd)
 {
@@ -50,7 +77,7 @@ void S2_find_details(struct image_t *input_image, void *S2_S3_ptr, sem_t *S2_S3_
         int row_index;
         char *p = (char *)malloc(sizeof(int) + sizeof(pixel) * input_image->width);
         memset(p, 0, sizeof(int) + sizeof(pixel) * input_image->width);
-        size_t bytes_read = recv(sockfd, (char *)p, sizeof(int) + sizeof(pixel) * input_image->width, 0);
+        size_t bytes_read = recv_all(sockfd, (char *)p, sizeof(int) + sizeof(pixel) * input_image->width);
         if (bytes_read <= 0)
         {
             cout << "Client disconnected.\n";
@@ -66,7 +93,7 @@ void S2_find_details(struct image_t *input_image, void *S2_S3_ptr, sem_t *S2_S3_
 
         memcpy(row, p + sizeof(int), sizeof(pixel) * input_image->width);
         rows_read++;
-        send(sockfd, (char *)&row_index, sizeof(int), 0);
+        send_all(sockfd, (char *)&row_index, sizeof(int));
         free(p);
 
         if (debug)
