@@ -227,12 +227,13 @@ int main(int argc, char **argv)
 {
     int noi = 1000;
 
-    if (argc != 3)
+    if (argc != 4)
     {
-        if (debug)
-            cout << "usage: ./a.out <path-to-original-image> <path-to-transformed-image>\n\n";
+
+        cout << "usage: ./a.out <path-to-original-image> <path-to-transformed-image> <number of iterations>\n\n";
         exit(0);
     }
+    noi = atoi(argv[3]);
 
     // auto start = high_resolution_clock::now();
     input_image = read_ppm_file(argv[1]);
