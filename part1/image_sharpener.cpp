@@ -11,6 +11,7 @@ struct image_t *S1_smoothen(struct image_t *input_image)
 {
 	// TODO
 	// remember to allocate space for smoothened_image. See read_ppm_file() in libppm.c for some help.
+	cout<<"S1 :"<<endl;
 	struct image_t *si = new struct image_t;
 	si->width = input_image->width;
 	si->height = input_image->height;
@@ -66,6 +67,7 @@ struct image_t *S1_smoothen(struct image_t *input_image)
 struct image_t *S2_find_details(struct image_t *input_image, struct image_t *smoothened_image)
 {
 	// TODO
+	cout<<"S2 :"<<endl;
 	struct image_t *de = new struct image_t;
 	de->width = input_image->width;
 	de->height = input_image->height;
@@ -97,6 +99,7 @@ struct image_t *S2_find_details(struct image_t *input_image, struct image_t *smo
 struct image_t *S3_sharpen(struct image_t *input_image, struct image_t *details_image)
 {
 	// TODO
+	cout<<"S3 :"<<endl;
 	struct image_t *sh = new struct image_t;
 	sh->width = input_image->width;
 	sh->height = input_image->height;
@@ -174,21 +177,24 @@ int main(int argc, char **argv)
 	auto duration = duration_cast<microseconds>(stop - start);
 	cout << "Total time taken: " << duration.count() << " microseconds" << endl;
 
-	start = high_resolution_clock::now();
+	auto start2 = high_resolution_clock::now();
 
-	for (int i = 0; i < 1000; i++)
+
+
+	for (int ite = 1; ite <= 1000; ite++)
 	{
+		cout<<"Iteration: "<<ite<<endl;
 		struct image_t *temp_smoothened_image = S1_smoothen(input_image);
 		struct image_t *temp_details_image = S2_find_details(input_image, temp_smoothened_image);
 		struct image_t *temp_sharpened_image = S3_sharpen(input_image, temp_details_image);
-		cout << "Done iteration " << i + 1 << endl;
 		free_image(temp_smoothened_image);
 		free_image(temp_details_image);
 		free_image(temp_sharpened_image);
+		
 	}
-	stop = high_resolution_clock::now();
-	duration = duration_cast<milliseconds>(stop - start);
-	cout << "Time taken for 1000 iterations: " << duration.count() << " ms" << endl;
+	auto stop2 = high_resolution_clock::now();
+	duration = duration_cast<microseconds>(stop2 - start2);
+	cout << "Time taken for 1000 iterations: " << duration.count() << " microseconds" << endl;
 
 	return 0;
 }

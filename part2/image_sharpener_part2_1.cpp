@@ -9,7 +9,7 @@
 using namespace std::chrono;
 using namespace std;
 int bb = 2;
-float alpha=1.1;   // scaling factor
+float alpha=1;   // scaling factor
 
 // class ThreadAndLock{
 
@@ -153,17 +153,19 @@ void* S1_thread(void* arg)
 {
 	
 
-	for(int count=1;count<=1000;++count)
-	{
+	// for(int count=1;count<=1000;++count)
+	// {
 
-		cout<<"S1 Thread Iteration: "<<count<<endl;
+		cout<<"S1 :"<<endl;
 
 		for(int i=0;i<height;++i)
 		{
 
 
 		
-		while(s1_s2_lock.test_and_set()) {}
+		while(s1_s2_lock.test_and_set()) {
+			std::this_thread::yield();
+		}
 		if(s1_s2==false)
 		{
 				S1_smoothen(buffer_s1_s2,i);
@@ -173,6 +175,7 @@ void* S1_thread(void* arg)
 
 		else{
 			i--;
+			// std::this_thread::yield();
 		}
 
 
@@ -183,17 +186,19 @@ void* S1_thread(void* arg)
 		}
 
 		
-	}
+	// }
 }
 
 void* S2_thread(void* arg)
 {
-	for(int count=1;count<=1000;++count)
-	{
-			cout<<"S2 Thread Iteration: "<<count<<endl;
+	// for(int count=1;count<=1000;++count)
+	// {
+			cout<<"S2 :"<<endl;
 		for(int i=0;i<height;++i)
 		{
-			while(s2_s3_lock.test_and_set()) {}
+			while(s2_s3_lock.test_and_set()) {
+				std::this_thread::yield();
+			}
 
 			if(s2_s3==false && s1_s2== true)
 			{
@@ -205,22 +210,25 @@ void* S2_thread(void* arg)
 
 			else{
 				i--;
+				// std::this_thread::yield();
 			}
 
 			s2_s3_lock.clear();
 		}
-	}
+	// }
 }
 
 
 void* S3_thread(void* arg)
 {
-	for(int count=1;count<=1000;++count)
-	{
-			cout<<"S3 Thread Iteration: "<<count<<endl;
+	// for(int count=1;count<=1000;++count)
+	// {
+			cout<<"S3 :"<<endl;
 		for(int i=0;i<height;++i)
 		{
-			while(s2_s3_lock.test_and_set()) {}
+			while(s2_s3_lock.test_and_set()) {
+				std::this_thread::yield();
+			}
 			
 				if(s2_s3==true)
 				{
@@ -229,11 +237,12 @@ void* S3_thread(void* arg)
 				}
 				else{
 					i--;
+					// std::this_thread::yield();
 				}
 
 				s2_s3_lock.clear();
 		}
-	}
+	// }
 
 }
 
@@ -305,15 +314,19 @@ int main(int argc, char **argv)
 	// ThreadAndLock* s2_s3 = new ThreadAndLock(width);
 
 	
+
 	
 	pthread_t s1,s2,s3;
+	for(int ite =1; ite<=1000;++ite)
+	{
+		cout<<"Iteration: "<<ite<<endl;
 	pthread_create(&s1,NULL,S1_thread,NULL);
 	pthread_create(&s2,NULL,S2_thread,NULL);
 	pthread_create(&s3,NULL,S3_thread,NULL);
 	pthread_join(s1,NULL);
 	pthread_join(s2,NULL);
 	pthread_join(s3,NULL);
-
+	}
 
 	write_ppm_file(argv[2],sharpened_image);
 
@@ -321,8 +334,8 @@ int main(int argc, char **argv)
     deallocate_space(sharpened_image);
 
 	auto stop = high_resolution_clock::now();
-    auto duration = duration_cast<microseconds>(stop - start);
-    cout << "Total time taken: " << duration.count() << " microseconds" << endl;
+    auto duration = duration_cast<milliseconds>(stop - start);
+    cout << "Total time taken: " << duration.count() << " milliseconds" << endl;
 
 
 
@@ -357,4 +370,3 @@ int main(int argc, char **argv)
 
     return 0;
 }
-

@@ -4,7 +4,5 @@
 .vscode/c_cpp_properties.json
 .vscode/tasks.json
 .gitignore
-makefile
 README.md
 .vscode/settings.json
-.gitignore
