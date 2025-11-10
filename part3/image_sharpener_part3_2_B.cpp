@@ -27,7 +27,7 @@ struct image_t *input_image;
 struct image_t *sharpened_image;
 int bb = 2;
 float alpha = 1;
-bool debug = true;
+bool debug = false;
 struct __attribute__((packed)) pixel
 {
     uint8_t r;

@@ -29,7 +29,7 @@ struct image_t *input_image;
 struct image_t *sharpened_image;
 int bb = 2;
 float alpha = 1;
-bool debug = true;
+bool debug = false;
 
 struct __attribute__((packed)) pixel
 {
@@ -170,13 +170,13 @@ int main(int argc, char **argv)
 {
     int noi = 1000;
 
-    if (argc != 4)
+    if (argc != 3)
     {
 
-        cout << "usage: ./a.out <path-to-original-image> <path-to-transformed-image> <number of iterations>\n\n";
+        cout << "usage: ./a.out <path-to-original-image>  <number of iterations>\n\n";
         exit(0);
     }
-    noi = atoi(argv[3]);
+    noi = atoi(argv[2]);
 
     input_image = read_ppm_file(argv[1]);
     height = input_image->height;
