@@ -185,6 +185,9 @@ void* S1_thread(void* arg)
 
 		}
 
+
+		return nullptr;
+
 		
 	// }
 }
@@ -216,6 +219,8 @@ void* S2_thread(void* arg)
 			s2_s3_lock.clear();
 		}
 	// }
+
+	return nullptr;
 }
 
 
@@ -243,6 +248,8 @@ void* S3_thread(void* arg)
 				s2_s3_lock.clear();
 		}
 	// }
+
+	return nullptr;
 
 }
 
