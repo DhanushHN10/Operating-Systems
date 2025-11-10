@@ -1,12 +1,13 @@
 CXX = g++
 CXXFLAGS = -std=c++11 -pthread -g
 
-INPUT_IMAGE = image.ppm	
+INPUT_IMAGE = 2.ppm	
 ITER = 1000
 
+.PHONY: part1
 part1:
 	cd part1 && $(CXX) $(CXXFLAGS) image_sharpener.cpp libppm.cpp -o 1.out
-	cd part1 && ./1.out ../$(INPUT_IMAGE) output_part1.ppm $(ITER)
+	cd part1 && ./1.out ../$(INPUT_IMAGE) output_part1.ppm
 
 part2_1:
 	cd part2 && $(CXX) $(CXXFLAGS) image_sharpener_part2_1.cpp libppm.cpp -o 2_1.out
