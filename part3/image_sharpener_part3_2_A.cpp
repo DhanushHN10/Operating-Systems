@@ -29,7 +29,7 @@ struct image_t *input_image;
 struct image_t *sharpened_image;
 int bb = 2;
 float alpha = 1;
-bool debug = true;
+bool debug = false;
 
 struct __attribute__((packed)) pixel
 {
@@ -41,6 +41,34 @@ struct __attribute__((packed)) pixel
 
 int rr = 0;
 char *ptr[sizeof(int) + sizeof(pixel) * 10000]; // assuming max width 10000
+
+ssize_t send_all(int sock, const void *buf, size_t len)
+{
+    size_t total = 0;
+    const char *p = (const char *)buf;
+    while (total < len)
+    {
+        ssize_t sent = send(sock, p + total, len - total, 0);
+        if (sent <= 0)
+            return sent;
+        total += sent;
+    }
+    return total;
+}
+
+ssize_t recv_all(int sock, void *buf, size_t len)
+{
+    size_t total = 0;
+    char *p = (char *)buf;
+    while (total < len)
+    {
+        ssize_t recvd = recv(sock, p + total, len - total, 0);
+        if (recvd <= 0)
+            return recvd;
+        total += recvd;
+    }
+    return total;
+}
 
 void S1_smoothen(struct image_t *input_image, int client_fd)
 {
@@ -88,10 +116,10 @@ void S1_smoothen(struct image_t *input_image, int client_fd)
         memset(p, 0, sizeof(int) + sizeof(pixel) * input_image->width);
         memcpy(p, &i, sizeof(int));
         memcpy(p + sizeof(int), row, sizeof(pixel) * input_image->width);
-        send(client_fd, (char *)p, sizeof(int) + sizeof(pixel) * input_image->width, 0);
+        send_all(client_fd, (char *)p, sizeof(int) + sizeof(pixel) * input_image->width);
         while (1)
         {
-            int br = recv(client_fd, (char *)&rr, sizeof(int), 0);
+            int br = recv_all(client_fd, (char *)&rr, sizeof(int));
             if (br < 0)
             {
                 cout << "Client disconnected.\n";
@@ -142,13 +170,13 @@ int main(int argc, char **argv)
 {
     int noi = 1000;
 
-    if (argc != 4)
+    if (argc != 3)
     {
 
-        cout << "usage: ./a.out <path-to-original-image> <path-to-transformed-image> <number of iterations>\n\n";
+        cout << "usage: ./a.out <path-to-original-image>  <number of iterations>\n\n";
         exit(0);
     }
-    noi = atoi(argv[3]);
+    noi = atoi(argv[2]);
 
     input_image = read_ppm_file(argv[1]);
     height = input_image->height;
