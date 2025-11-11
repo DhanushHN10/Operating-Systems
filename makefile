@@ -1,7 +1,7 @@
 CXX = g++
 CXXFLAGS = -std=c++11 -pthread -g
 
-INPUT_IMAGE = 2.ppm	
+INPUT_IMAGE = 3.ppm	
 ITER = 1000
 
 .PHONY: part1
@@ -39,3 +39,6 @@ part3_2_B:
 
 clean:
 	find . -type f -name "*.out" -delete
+
+clean_output:
+	find . -type f -name "output_*.ppm" -delete
