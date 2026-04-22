@@ -1,0 +1,8 @@
+*.ppm
+!image.ppm
+*.out
+.vscode/c_cpp_properties.json
+.vscode/tasks.json
+.gitignore
+README.md
+.vscode/settings.json
